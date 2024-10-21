@@ -1,3 +1,3 @@
 # rustodo
 ## A Todo list Webapp
-Simple website development on rust (frontend + backend)
+Simple website demo built using rust (frontend + backend)
