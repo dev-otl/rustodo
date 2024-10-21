@@ -3,7 +3,7 @@ use gloo_net::http::Request;
 use leptos::*;
 use logging::log;
 use serde::{Deserialize, Serialize};
-const SERVER: &'static str = "<Insert server address here>";
+const SERVER: &'static str = "<Your server here>";
 
 #[derive(Serialize, Deserialize, Clone)]
 struct ResponseTask {
@@ -204,122 +204,83 @@ fn App() -> impl IntoView {
 
     view! {
         <>
-            <div>{move || format!("Hi {}!", data.get().username)} <button
-                on:click={on_signout}>"Sign out"</button></div>
+        <div class="d-flex flex-row justify-content-between min-vh-100">
+            <div class="d-flex flex-column flex-shrink border">
+                <div class="d-flex flex-row justify-content-between">
+                    <div class="d-flex m-2 p-1">
+                        {move || format!("Hi {}!", data.get().username)}
+                    </div>
+                    <button class="btn btn-light m-2 p-2 " on:click={on_signout}>"Sign out"</button>
+                </div>
 
-            <form on:submit=on_login_info_submit>
-                <div>
-                    <input type="text"
-                    on:input=move |ev| {
-                        set_username.set(event_target_value(&ev))
-                    }
-                        prop:value =move||username.get()
-                    />
-                </div>
-                <div>
-                    <input type="text"
-                    on:input=move |ev| {
-                        set_password.set(event_target_value(&ev))
-                    }
-                        prop:value = move|| password.get()
-                    />
-                </div>
-                <div>
-                    <input type="submit" value="Sign in"/>
-                    <input type="reset" value="Clear"/>
-                </div>
-            </form>
-            <div>
-                <div>"Your To Dos:"</div>
-                    <For
-                        each=move || data.get().tasks
-                        key=|task| task.task_id
-                        children=move | task:ResponseTask| {
-                            view! {
-                                    <form>
-                                        <div>{task.task_id}</div>
-                                        <div>
-                                            <input type="text"
-                                            on:input=move |ev| {
-                                                set_selected_task_title.set(event_target_value(&ev))
-                                            }
-                                            disabled=move|| selected_task_id.get() != task.task_id
-                                            prop:value={ if selected_task_id.get() != task.task_id {
-                                                task.task_title
-                                            }
-                                            else {
-                                                    selected_task_title.get()
-                                                }}
-                                            />
-                                        </div>
-                                        <div>
-                                            <input type="text"
-                                            on:input=move |ev| {
-                                                set_selected_task_description.set(event_target_value(&ev))
-                                            }
-                                            disabled=move|| selected_task_id.get() != task.task_id
-                                            prop:value= if selected_task_id.get() != task.task_id {
-                                                task.task_description
-                                            }
-                                            else {
-                                                selected_task_description.get()
-                                                }
-                                            />
-                                            </div>
-                                        <div>
-                                        <button
-                                            value={task.task_id}
-                                            prop:value=move || task.task_id
-                                            on:click=on_task_edit_click
-                                            >{move|| if  selected_task_id.get() != task.task_id{"Edit"} else {"Done"}}</button>
-                                            <button
-                                            on:click=on_task_delete_click
-                                            prop:value=move || task.task_id
-                                            >{move|| if  selected_task_id.get() != task.task_id{"Delete"} else {"Cancel"}}</button>
-                                        </div>
-                                    </form>
-                                }
-                        }
-                    />
-                    <form on:submit=on_new_task_submit >
-                        <div>"New Task"</div>
-                        <div>
-                            <input type="text"
-                            disabled=move|| selected_task_id.get()!=-1
-                            on:input=move |ev| {
-                                set_selected_task_title.set(event_target_value(&ev))
-                            }
-                            prop:value=move || if selected_task_id.get() != 1 {
-                                "".to_string()
-                            }
-                            else {
-                                selected_task_title.get()
-                            }
-                            />
-                        </div>
-                        <div>
-                            <input type="text"
-                            disabled=move|| selected_task_id.get()!=-1
-                            on:input=move |ev| {
-                                set_selected_task_description.set(event_target_value(&ev))
-                            }
-                                prop:value=move ||if selected_task_id.get() != 1 {
-                                    "".to_string()
-                                }
-                                else {
-                                    selected_task_description.get()
-                                }
-                            />
-                        </div>
-                            <button
-                            disabled=move|| selected_task_id.get()!=-1
-                            type="submit">"Add"</button>
-                            <button
-                            disabled=move|| selected_task_id.get()!=-1
-                            type="reset">"Clear"</button>
-                    </form>
+                <form class="d-flex flex-column form" on:submit=on_login_info_submit>
+                    <div>
+                        <input placeholder="Username" class="p-2 m-2" type="text" on:input=move |ev| {
+                            set_username.set(event_target_value(&ev)) } prop:value=move||username.get() />
+                    </div>
+                    <div>
+                        <input placeholder="Password" class="p-2 m-2" type="text" on:input=move |ev| {
+                            set_password.set(event_target_value(&ev)) } prop:value=move|| password.get() />
+                    </div>
+                    <div class="d-flex flex-row justify-content-end">
+                        <input class="btn btn-light m-2 p-2" type="submit" value="Sign in" />
+                        <input class="btn btn-light m-2 p-2" type="reset" value="Clear" />
+                    </div>
+                </form>
             </div>
-            <div>{move || serde_json::to_string(&data)}</div>
-        </>
+            <div class="d-flex flex-column flex-fill justify-content-top align-items-center flex-fill">
+                <div class="h1 d-flex flex-row m-2 p-2"><u>"Your To Dos"</u></div>
+                <For each=move || data.get().tasks key=|task| task.task_id children=move | task:ResponseTask| { view! {
+                    <form class="d-flex flex-column form bg-light rounded p-2 m-2">
+                    //<div>{task.task_id}</div>
+
+                    <div>
+                        <input class="text text-center p-2 m-2" type="text" on:input=move |ev| {
+                            set_selected_task_title.set(event_target_value(&ev)) } disabled=move|| selected_task_id.get()
+                            !=task.task_id prop:value={ if selected_task_id.get() !=task.task_id { task.task_title } else {
+                            selected_task_title.get() }} />
+                    </div>
+                    <div>
+                        <input class="text text-center p-2 m-2" type="text" on:input=move |ev| {
+                            set_selected_task_description.set(event_target_value(&ev)) } disabled=move||
+                            selected_task_id.get() !=task.task_id prop:value=if selected_task_id.get() !=task.task_id {
+                            task.task_description } else { selected_task_description.get() } />
+                    </div>
+                    <div class="d-flex flex-row justify-content-end">
+                        <button class="btn btn-light m-2 p-2" value={task.task_id} prop:value=move || task.task_id
+                            on:click=on_task_edit_click>{move|| if
+                            selected_task_id.get() != task.task_id{"Edit"} else {"Done"}}</button>
+                        <button class="btn btn-light m-2 p-2" on:click=on_task_delete_click prop:value=move ||
+                            task.task_id>{move|| if
+                            selected_task_id.get() != task.task_id{"Delete"} else {"Cancel"}}</button>
+                    </div>
+                    </form>
+                    }
+                    }
+                    />
+                    <form class="d-flex flex-column form bg-light rounded p-2 m-4 " on:submit=on_new_task_submit>
+                        //<div>"New Task"</div>
+                        <div>
+                            <input class="text text-center p-2 m-2" type="text" disabled=move|| selected_task_id.get()!=-1
+                                on:input=move |ev| { set_selected_task_title.set(event_target_value(&ev)) } prop:value=move
+                                || if selected_task_id.get() !=1 { "" .to_string() } else { selected_task_title.get() } />
+                        </div>
+                        <div>
+                            <input class="text text-center p-2 m-2" type="text" disabled=move|| selected_task_id.get()!=-1
+                                on:input=move |ev| { set_selected_task_description.set(event_target_value(&ev)) }
+                                prop:value=move ||if selected_task_id.get() !=1 { "" .to_string() } else {
+                                selected_task_description.get() } />
+                        </div>
+                        <div class="d-flex flex-row justify-content-end">
+                            <button class="btn btn-light m-2 p-2" disabled=move|| selected_task_id.get()!=-1
+                                type="submit">"Add"</button>
+                            <button class="btn btn-light m-2 p-2" disabled=move|| selected_task_id.get()!=-1
+                                type="reset">"Clear"</button>
+                        </div>
+                    </form>
+                    <div>{move || serde_json::to_string(&data)}</div>
+            </div>
+        </div>
+    </>
     }
 }
